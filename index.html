@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Johnson AI</title>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #050505;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .box {
+      width: 90%;
+      max-width: 500px;
+    }
+
+    h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    #status {
+      color: #00ffcc;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 18px 30px;
+      border: none;
+      border-radius: 50px;
+      background: #00ffcc;
+      color: #000;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #output {
+      margin-top: 30px;
+      font-size: 20px;
+      min-height: 50px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h1>JOHNSON</h1>
+    <div id="status">System Ready</div>
+
+    <button onclick="startJohnson()">🎙️ Talk to Johnson</button>
+
+    <div id="output">Waiting for command...</div>
+  </div>
+
+  <script>
+    const output = document.getElementById("output");
+    const status = document.getElementById("status");
+
+    function speak(text) {
+      output.innerText = text;
+
+      const voice = new SpeechSynthesisUtterance(text);
+      voice.lang = "en-IN";
+      voice.rate = 0.95;
+
+      speechSynthesis.speak(voice);
+    }
+
+    function startJohnson() {
+
+      const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        speak("Sorry. Voice recognition is not supported in this browser.");
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+
+      recognition.lang = "en-IN";
+      recognition.interimResults = false;
+      recognition.continuous = false;
+
+      status.innerText = "Listening...";
+
+      recognition.start();
+
+      recognition.onresult = function(event) {
+
+        const command =
+          event.results[0][0].transcript.toLowerCase();
+
+        status.innerText = "Command received";
+
+        if (command.includes("hello")) {
+          speak("Hello sir. Johnson is online.");
+        }
+
+        else if (command.includes("who are you")) {
+          speak("I am Johnson, your personal AI assistant.");
+        }
+
+        else if (command.includes("time")) {
+          const time = new Date().toLocaleTimeString();
+          speak("The current time is " + time);
+        }
+
+        else {
+          speak("I heard you say: " + command);
+        }
+      };
+
+      recognition.onerror = function() {
+        status.innerText = "Voice error";
+        speak("I could not understand that command.");
+      };
+
+      recognition.onend = function() {
+        status.innerText = "System Ready";
+      };
+    }
+  </script>
+
+</body>
+</html>
